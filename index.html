@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>POSHAN Tracker 2.0 – SUPOSHIT Governance Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --gov-blue: #003580;
+    --gov-blue-light: #1a4f9c;
+    --gov-blue-dark: #002060;
+    --saffron: #FF9933;
+    --saffron-light: #FFB347;
+    --white: #ffffff;
+    --grey-50: #f8f9fa;
+    --grey-100: #e9ecef;
+    --grey-200: #dee2e6;
+    --grey-300: #ced4da;
+    --grey-400: #adb5bd;
+    --grey-500: #6c757d;
+    --grey-600: #495057;
+    --grey-700: #343a40;
+    --grey-800: #212529;
+    --red-alert: #c0392b;
+    --yellow-warn: #f39c12;
+    --green-ok: #27ae60;
+    --border: 1px solid #ced4da;
+    --shadow: 0 1px 3px rgba(0,0,0,0.12);
+    --font: 'Noto Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font);
+    font-size: 13px;
+    background: var(--grey-100);
+    color: var(--grey-800);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== HEADER ===== */
+  .gov-header {
+    background: var(--gov-blue-dark);
+    border-bottom: 4px solid var(--saffron);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .gov-header-top {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .emblem {
+    width: 44px; height: 44px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    border: 2px solid var(--saffron);
+  }
+
+  .header-text { flex: 1; min-width: 0; }
+  .header-text .dept-name {
+    color: #cce0ff; font-size: 9px;
+    letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+  }
+  .header-text .portal-name {
+    color: white; font-size: 14px; font-weight: 700;
+    line-height: 1.2; letter-spacing: 0.2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .header-text .sub-name { color: var(--saffron-light); font-size: 10px; font-weight: 500; }
+
+  .header-right { text-align: right; color: #cce0ff; font-size: 10px; line-height: 1.6; flex-shrink: 0; }
+  .header-right .user-role {
+    background: var(--saffron); color: var(--gov-blue-dark);
+    font-weight: 700; padding: 2px 7px; border-radius: 2px;
+    font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase;
+    display: inline-block;
+  }
+  .header-meta { display: none; }
+
+  /* ===== MOBILE NAV ===== */
+  .mobile-nav-toggle {
+    display: none;
+    background: var(--gov-blue);
+    padding: 0 16px;
+    height: 42px;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    font-family: var(--font);
+  }
+  .hamburger { font-size: 20px; }
+
+  /* ===== NAV BAR ===== */
+  .gov-nav {
+    background: var(--gov-blue);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    height: 38px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .gov-nav::-webkit-scrollbar { display: none; }
+
+  .nav-item {
+    padding: 0 14px;
+    height: 38px;
+    display: flex; align-items: center;
+    color: #cce0ff; font-size: 11px; font-weight: 500;
+    cursor: pointer; border-right: 1px solid rgba(255,255,255,0.1);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .nav-item.active { background: var(--saffron); color: var(--gov-blue-dark); font-weight: 700; }
+
+  .level-select {
+    margin-left: auto; display: flex; align-items: center;
+    gap: 6px; color: #cce0ff; font-size: 10px; flex-shrink: 0; padding-left: 10px;
+  }
+  .level-select select {
+    background: var(--gov-blue-dark); border: 1px solid rgba(255,255,255,0.3);
+    color: white; padding: 3px 6px; font-size: 10px;
+    font-family: var(--font); cursor: pointer; outline: none; max-width: 140px;
+  }
+
+  /* ===== TABS ===== */
+  .tab-bar {
+    background: var(--grey-50); border-bottom: var(--border);
+    padding: 0 16px; display: flex;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 10px 14px; font-size: 11px; font-weight: 500;
+    cursor: pointer; border-bottom: 3px solid transparent;
+    color: var(--grey-600); text-transform: uppercase; letter-spacing: 0.4px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .tab.active { color: var(--gov-blue); border-bottom-color: var(--saffron); font-weight: 700; background: white; }
+
+  /* ===== INFO BAR ===== */
+  .info-bar {
+    background: #e8f0fe; border-bottom: 1px solid #b8d0fa;
+    padding: 7px 16px; font-size: 11px; color: var(--gov-blue);
+    line-height: 1.4;
+  }
+
+  /* ===== MAIN ===== */
+  .main { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  /* ===== SECTION HEADER ===== */
+  .section-header {
+    background: var(--gov-blue); color: white;
+    padding: 8px 12px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.6px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 6px;
+    border-left: 4px solid var(--saffron);
+  }
+  .section-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .btn-sm {
+    background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+    color: white; padding: 4px 10px; font-size: 10px;
+    font-family: var(--font); cursor: pointer; font-weight: 600;
+    letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .btn-saffron { background: var(--saffron); border-color: var(--saffron-light); color: var(--gov-blue-dark); }
+
+  .panel { background: white; border: var(--border); box-shadow: var(--shadow); }
+
+  /* ===== KPI GRID ===== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: var(--border); background: white; box-shadow: var(--shadow);
+  }
+  .kpi-tile {
+    padding: 10px 12px; border-right: var(--border);
+    border-bottom: var(--border); position: relative; overflow: hidden;
+  }
+  .kpi-tile:nth-child(3n) { border-right: none; }
+  .kpi-tile:nth-last-child(-n+3) { border-bottom: none; }
+  .kpi-tile::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .kpi-tile.green::before { background: var(--green-ok); }
+  .kpi-tile.yellow::before { background: var(--yellow-warn); }
+  .kpi-tile.red::before { background: var(--red-alert); }
+  .kpi-label { font-size: 9px; color: var(--grey-500); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; line-height: 1.3; margin-bottom: 5px; }
+  .kpi-value { font-size: 20px; font-weight: 700; color: var(--gov-blue-dark); line-height: 1; margin-bottom: 3px; }
+  .kpi-target { font-size: 9px; color: var(--grey-500); margin-bottom: 5px; }
+  .kpi-footer { display: flex; align-items: center; justify-content: space-between; }
+  .status-badge {
+    font-size: 8px; font-weight: 700; padding: 2px 5px;
+    border-radius: 1px; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .status-badge.green { background: #d4edda; color: #155724; }
+  .status-badge.yellow { background: #fff3cd; color: #856404; }
+  .status-badge.red { background: #f8d7da; color: #721c24; }
+  .trend { font-size: 11px; font-weight: 700; }
+  .trend.up { color: var(--green-ok); }
+  .trend.down { color: var(--red-alert); }
+
+  /* ===== TABLES ===== */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 600px; }
+  thead th {
+    background: var(--grey-100); border: 1px solid var(--grey-200);
+    padding: 7px 8px; text-align: left; font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.4px; color: var(--grey-700); white-space: nowrap;
+  }
+  tbody td { border: 1px solid var(--grey-200); padding: 7px 8px; vertical-align: middle; }
+  tbody tr:nth-child(even) { background: #fafafa; }
+  tbody tr.row-yellow { background: #fff8e7 !important; }
+  tbody tr.row-red { background: #fff0f0 !important; }
+
+  .badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 2px 6px; border-radius: 1px; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .badge-sam { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .badge-mam { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+  .badge-suw { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+  .badge-red { background: #f8d7da; color: #721c24; }
+  .badge-yellow { background: #fff3cd; color: #856404; }
+  .badge-green { background: #d4edda; color: #155724; }
+  .badge-purple { background: #e8d5f0; color: #4a1060; }
+  .badge-grey { background: var(--grey-100); color: var(--grey-700); border: 1px solid var(--grey-300); }
+
+  .escalation-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 9px; font-weight: 700; padding: 2px 6px;
+    background: #c0392b; color: white; border-radius: 1px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    animation: pulse-badge 2s infinite;
+  }
+  @keyframes pulse-badge { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+  /* ===== LAYOUT GRIDS ===== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ===== HEATMAP ===== */
+  .heatmap-grid {
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 6px;
+  }
+  .heatmap-cell {
+    padding: 8px 6px; text-align: center; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.15s;
+  }
+  .heatmap-cell.green { background: #d4edda; border-color: #c3e6cb; }
+  .heatmap-cell.yellow { background: #fff3cd; border-color: #ffeeba; }
+  .heatmap-cell.red { background: #f8d7da; border-color: #f5c6cb; }
+  .heatmap-cell.purple { background: #e8d5f0; border-color: #d4a8e8; }
+  .heatmap-cell .awc-name { font-size: 9px; font-weight: 700; color: var(--grey-800); line-height: 1.2; margin-bottom: 2px; }
+  .heatmap-cell .awc-score { font-size: 15px; font-weight: 700; line-height: 1; }
+  .heatmap-cell.green .awc-score { color: #155724; }
+  .heatmap-cell.yellow .awc-score { color: #856404; }
+  .heatmap-cell.red .awc-score { color: #721c24; }
+  .heatmap-cell.purple .awc-score { color: #4a1060; }
+  .heatmap-cell .awc-label { font-size: 8px; color: var(--grey-600); text-transform: uppercase; letter-spacing: 0.3px; }
+
+  .heatmap-legend {
+    padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 10px;
+    border-top: var(--border); background: var(--grey-50); font-size: 10px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 4px; color: var(--grey-600); }
+  .legend-dot { width: 11px; height: 11px; border-radius: 1px; flex-shrink: 0; }
+
+  /* ===== ESCALATION FLOW ===== */
+  .escalation-flow {
+    padding: 12px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .esc-stage {
+    border: var(--border); padding: 10px; background: var(--grey-50);
+    position: relative;
+  }
+  .esc-stage-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--gov-blue); margin-bottom: 6px;
+    padding-bottom: 5px; border-bottom: 2px solid var(--saffron);
+  }
+  .esc-row { display: flex; align-items: flex-start; gap: 12px; }
+  .esc-stat { font-size: 24px; font-weight: 700; color: var(--grey-800); line-height: 1; flex-shrink: 0; }
+  .esc-stat.alert { color: var(--red-alert); }
+  .esc-stat.warn { color: var(--yellow-warn); }
+  .esc-details { flex: 1; }
+  .esc-label { font-size: 10px; color: var(--grey-500); }
+  .esc-trigger { margin-top: 5px; font-size: 10px; background: var(--grey-100); border: var(--border); padding: 4px 7px; color: var(--grey-700); }
+  .esc-deadline { margin-top: 4px; font-size: 10px; color: var(--red-alert); font-weight: 600; }
+
+  /* ===== TIER GRID ===== */
+  .tier-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+  .tier-card { padding: 12px; border-right: var(--border); border-bottom: var(--border); text-align: center; }
+  .tier-card:nth-child(2n) { border-right: none; }
+  .tier-card:nth-last-child(-n+2) { border-bottom: none; }
+  .tier-icon { font-size: 24px; margin-bottom: 4px; }
+  .tier-name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+  .tier-count { font-size: 26px; font-weight: 700; line-height: 1; }
+  .tier-desc { font-size: 9px; color: var(--grey-500); margin-top: 3px; }
+  .tier-card.platinum .tier-name, .tier-card.platinum .tier-count { color: #5b3f9e; }
+  .tier-card.gold .tier-name, .tier-card.gold .tier-count { color: #b8860b; }
+  .tier-card.silver .tier-name, .tier-card.silver .tier-count { color: #607080; }
+  .tier-card.watchlist .tier-name, .tier-card.watchlist .tier-count { color: var(--red-alert); }
+
+  /* ===== SPARKLINE ===== */
+  .sparkline-wrap { padding: 10px 14px; }
+  .metric-row {
+    display: grid; grid-template-columns: 1fr;
+    padding: 10px 0; border-bottom: 1px solid var(--grey-100);
+    gap: 6px;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-header { display: flex; justify-content: space-between; align-items: center; }
+  .metric-name { font-size: 11px; font-weight: 600; color: var(--grey-700); }
+  .metric-val { font-size: 14px; font-weight: 700; color: var(--grey-800); }
+  .spark { height: 24px; display: flex; align-items: flex-end; gap: 3px; }
+  .spark-bar { background: var(--gov-blue-light); width: 18px; opacity: 0.7; border-radius: 1px 1px 0 0; }
+  .spark-bar.alert { background: var(--red-alert); opacity: 0.8; }
+
+  /* ===== INTEGRITY ===== */
+  .integrity-grid { display: flex; flex-direction: column; gap: 14px; padding: 14px; }
+  .integrity-stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .int-stat { border: var(--border); padding: 10px; background: var(--grey-50); }
+  .int-stat-val { font-size: 20px; font-weight: 700; color: var(--grey-800); }
+  .int-stat-val.alert { color: var(--red-alert); }
+  .int-stat-label { font-size: 10px; color: var(--grey-500); text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,32,0.55); z-index: 200;
+    align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white; width: 100%; max-width: 520px;
+    border: var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    max-height: 90vh; overflow-y: auto;
+    border-radius: 8px 8px 0 0;
+  }
+  .modal-header {
+    background: var(--gov-blue); color: white;
+    padding: 10px 14px; display: flex;
+    justify-content: space-between; align-items: center;
+    border-left: 4px solid var(--saffron);
+    position: sticky; top: 0;
+  }
+  .modal-header h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .modal-close { cursor: pointer; font-size: 20px; color: rgba(255,255,255,0.8); background: none; border: none; padding: 0 4px; }
+  .modal-body { padding: 14px; }
+  .modal-stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+  .m-stat { background: var(--grey-50); border: var(--border); padding: 10px; }
+  .m-stat-val { font-size: 18px; font-weight: 700; color: var(--gov-blue-dark); }
+  .m-stat-label { font-size: 9px; color: var(--grey-500); text-transform: uppercase; }
+  .modal-btns { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .modal-btns .btn-sm { padding: 8px 14px; font-size: 11px; }
+
+  /* ===== SECTION NOTE ===== */
+  .section-note { padding: 6px 12px; font-size: 10px; color: var(--grey-500); background: var(--grey-50); border-top: var(--border); font-style: italic; line-height: 1.4; }
+
+  /* ===== MAP ===== */
+  .map-placeholder {
+    background: #e8f0fe; border: var(--border); height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 6px; color: var(--grey-500);
+    font-size: 11px; position: relative; overflow: hidden;
+  }
+  .map-dots { position: absolute; inset: 0; }
+  .map-dot { position: absolute; border-radius: 50%; opacity: 0.5; }
+
+  /* ===== TOGGLE ===== */
+  .toggle-group { display: flex; }
+  .toggle-btn {
+    background: var(--grey-100); border: 1px solid var(--grey-300);
+    padding: 4px 10px; font-size: 10px; font-family: var(--font);
+    cursor: pointer; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.3px; color: var(--grey-600);
+  }
+  .toggle-btn.active { background: var(--gov-blue); color: white; border-color: var(--gov-blue); }
+  .toggle-btn:first-child { border-right: none; }
+
+  /* ===== FOOTER ===== */
+  .gov-footer {
+    background: var(--gov-blue-dark); color: rgba(255,255,255,0.5);
+    font-size: 10px; padding: 10px 16px;
+    display: flex; flex-direction: column; gap: 6px;
+    border-top: 3px solid var(--saffron); text-align: center;
+    line-height: 1.5;
+  }
+  .download-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--saffron); color: var(--gov-blue-dark); border: none;
+    padding: 8px 16px; font-size: 11px; font-family: var(--font);
+    font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+    align-self: center;
+  }
+
+  /* ===== SUBHEADING ===== */
+  .sub-section-title {
+    font-size: 11px; font-weight: 700; color: var(--gov-blue);
+    text-transform: uppercase; margin-bottom: 8px;
+    padding-bottom: 5px; border-bottom: 2px solid var(--saffron);
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== TAB CONTENT ===== */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== AUDIT TABLE ===== */
+  .audit-row-due { color: var(--red-alert); font-weight: 600; }
+
+  /* ===== DESKTOP OVERRIDES ===== */
+  @media (min-width: 768px) {
+    .gov-header-top { padding: 8px 20px; }
+    .header-text .portal-name { font-size: 17px; }
+    .header-text .dept-name { font-size: 11px; }
+    .header-right { font-size: 11px; }
+    .header-right .user-role { font-size: 10px; }
+    .header-meta { display: block; }
+    .gov-nav { padding: 0 20px; }
+    .nav-item { font-size: 12px; padding: 0 16px; }
+    .tab-bar { padding: 0 20px; }
+    .main { padding: 14px 20px; gap: 14px; }
+    .kpi-grid { grid-template-columns: repeat(6, 1fr); }
+    .kpi-tile:nth-child(3n) { border-right: var(--border); }
+    .kpi-tile:nth-last-child(-n+3) { border-bottom: none; }
+    .kpi-tile { border-bottom: none; }
+    .kpi-tile:last-child { border-right: none; }
+    .kpi-tile:nth-child(3n) { border-bottom: none; }
+    .kpi-value { font-size: 24px; }
+    .kpi-label { font-size: 10px; }
+    .status-badge { font-size: 9px; }
+    .two-col { grid-template-columns: 1fr 1fr; }
+    .escalation-flow { flex-direction: row; gap: 0; align-items: stretch; }
+    .esc-stage { margin-right: 14px; }
+    .esc-stage:last-child { margin-right: 0; }
+    .esc-stage::after {
+      content: '▶'; position: absolute; right: -14px; top: 50%;
+      transform: translateY(-50%); color: var(--saffron); font-size: 18px; z-index: 1;
+    }
+    .esc-stage:last-child::after { display: none; }
+    .esc-row { flex-direction: column; gap: 4px; }
+    .tier-grid { grid-template-columns: repeat(4, 1fr); }
+    .tier-card:nth-child(2n) { border-right: var(--border); }
+    .tier-card:nth-last-child(-n+2) { border-bottom: var(--border); }
+    .tier-card:last-child { border-right: none; border-bottom: none; }
+    .tier-card:nth-child(4n) { border-right: none; }
+    .integrity-grid { flex-direction: row; }
+    .integrity-grid > div { flex: 1; }
+    .modal { border-radius: 0; align-self: center; }
+    .modal-overlay { align-items: center; }
+    .metric-row { grid-template-columns: 200px 1fr 80px 80px; gap: 12px; }
+    .metric-header { display: contents; }
+    .gov-footer { flex-direction: row; justify-content: space-between; align-items: center; text-align: left; }
+    table { min-width: unset; }
+    .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="gov-header">
+  <div class="gov-header-top">
+    <div class="emblem">🇮🇳</div>
+    <div class="header-text">
+      <div class="dept-name">Govt. of Odisha — Dept. of Women &amp; Child Development</div>
+      <div class="portal-name">SUPOSHIT Odisha — POSHAN Tracker 2.0</div>
+      <div class="sub-name">ICDS Governance Platform</div>
+    </div>
+    <div class="header-right">
+      <div style="margin-bottom:3px;"><span class="user-role">CDPO – Nabarangpur</span></div>
+      <div>Smt. Priyanka Das</div>
+      <div class="header-meta">Sync: 19-Feb-2026, 09:42 AM</div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="gov-nav">
+    <div class="nav-item active">Dashboard</div>
+    <div class="nav-item">Case Mgmt</div>
+    <div class="nav-item">Reports</div>
+    <div class="nav-item">Supervision</div>
+    <div class="nav-item">Alerts <span style="background:var(--red-alert);color:white;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:4px;">7</span></div>
+    <div class="level-select">
+      <span style="white-space:nowrap">Level:</span>
+      <select onchange="alert('Switching to ' + this.value + ' view')">
+        <option>Project (CDPO)</option>
+        <option>AWC Level</option>
+        <option>Sector Level</option>
+        <option>District / State</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('main', this)">Main Dashboard</div>
+  <div class="tab" onclick="switchTab('integrity', this)">Integrity &amp; Audit</div>
+  <div class="tab" onclick="switchTab('engagement', this)">Engagement Tracker</div>
+  <div class="tab" onclick="switchTab('tiers', this)">Tier Rankings</div>
+</div>
+
+<!-- INFO BAR -->
+<div class="info-bar">
+  ⚠️ <strong>ALERT:</strong> 3 AWCs in Sector-7 crossed 45-day stagnation threshold. Auto-escalation to District triggered. &nbsp;|&nbsp; 📅 Data Lock: 28-Feb-2026
+</div>
+
+<!-- ===== MAIN TAB ===== -->
+<div id="tab-main" class="tab-content active">
+<div class="main">
+
+  <!-- KPI -->
+  <div>
+    <div class="section-header">
+      Real-Time Governance Summary — Feb 2026
+      <div class="section-actions">
+        <button class="btn-sm btn-saffron" onclick="alert('Generating PDF Report...')">⬇ PDF</button>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-tile green">
+        <div class="kpi-label">Registered Children</div>
+        <div class="kpi-value">12,847</div>
+        <div class="kpi-target">Target: 13,200</div>
+        <div class="kpi-footer"><span class="status-badge green">On Track</span><span class="trend up">↑2.3%</span></div>
+      </div>
+      <div class="kpi-tile yellow">
+        <div class="kpi-label">GM Coverage</div>
+        <div class="kpi-value">78.4%</div>
+        <div class="kpi-target">Target: 90%</div>
+        <div class="kpi-footer"><span class="status-badge yellow">Below</span><span class="trend up">↑1.1%</span></div>
+      </div>
+      <div class="kpi-tile red">
+        <div class="kpi-label">Open SAM Cases</div>
+        <div class="kpi-value">214</div>
+        <div class="kpi-target">Target: &lt;100</div>
+        <div class="kpi-footer"><span class="status-badge red">Critical</span><span class="trend down">↑8.6%</span></div>
+      </div>
+      <div class="kpi-tile yellow">
+        <div class="kpi-label">Median Resolution</div>
+        <div class="kpi-value">34d</div>
+        <div class="kpi-target">Target: ≤21 days</div>
+        <div class="kpi-footer"><span class="status-badge yellow">Action</span><span class="trend down">↓3d</span></div>
+      </div>
+      <div class="kpi-tile red">
+        <div class="kpi-label">Repeat-SAM Rate</div>
+        <div class="kpi-value">11.2%</div>
+        <div class="kpi-target">Target: &lt;5%</div>
+        <div class="kpi-footer"><span class="status-badge red">Alert</span><span class="trend down">↑0.8%</span></div>
+      </div>
+      <div class="kpi-tile green">
+        <div class="kpi-label">SUPOSHIT AWCs</div>
+        <div class="kpi-value">41.7%</div>
+        <div class="kpi-target">Target: 60%</div>
+        <div class="kpi-footer"><span class="status-badge green">Growing</span><span class="trend up">↑5.2%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE TABLE -->
+  <div class="panel">
+    <div class="section-header">
+      High-Risk Case Tracker
+      <div class="section-actions">
+        <button class="btn-sm" onclick="alert('Exporting...')">⬇ Export</button>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Child ID</th>
+            <th>AWC Name</th>
+            <th>Status</th>
+            <th>Days Since Follow-up</th>
+            <th>Appetite Test</th>
+            <th>Recovery Cycle</th>
+            <th>Escalation</th>
+            <th>Trigger</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-red">
+            <td><strong>ODI-2024-0834</strong></td>
+            <td>Badangi AWC-3</td>
+            <td><span class="badge badge-sam">SAM</span></td>
+            <td><strong style="color:var(--red-alert)">62 days</strong></td>
+            <td><span class="badge badge-red">No</span></td>
+            <td>Cycle 2 – Stagnant</td>
+            <td><span class="badge badge-red">District</span></td>
+            <td><span class="escalation-badge">⚑ Auto</span></td>
+            <td><button class="btn-sm btn-saffron" onclick="openModal('ODI-2024-0834','Badangi AWC-3')">View</button></td>
+          </tr>
+          <tr class="row-red">
+            <td><strong>ODI-2024-1102</strong></td>
+            <td>Sector-7 AWC-1</td>
+            <td><span class="badge badge-sam">SAM</span></td>
+            <td><strong style="color:var(--red-alert)">48 days</strong></td>
+            <td><span class="badge badge-yellow">Pending</span></td>
+            <td>Cycle 1 – No Progress</td>
+            <td><span class="badge badge-red">District</span></td>
+            <td><span class="escalation-badge">⚑ Auto</span></td>
+            <td><button class="btn-sm btn-saffron" onclick="openModal('ODI-2024-1102','Sector-7 AWC-1')">View</button></td>
+          </tr>
+          <tr class="row-yellow">
+            <td><strong>ODI-2024-2231</strong></td>
+            <td>Tentulikhunti AWC-2</td>
+            <td><span class="badge badge-mam">MAM</span></td>
+            <td><strong style="color:var(--yellow-warn)">22 days</strong></td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td>Cycle 1 – Monitoring</td>
+            <td><span class="badge badge-yellow">CDPO</span></td>
+            <td>—</td>
+            <td><button class="btn-sm" onclick="alert('Opening ODI-2024-2231')">View</button></td>
+          </tr>
+          <tr class="row-yellow">
+            <td><strong>ODI-2024-3044</strong></td>
+            <td>Umerkote AWC-5</td>
+            <td><span class="badge badge-sam">SAM</span></td>
+            <td><strong style="color:var(--yellow-warn)">17 days</strong></td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td>Cycle 2 – Improving</td>
+            <td><span class="badge badge-yellow">Supervisor</span></td>
+            <td>—</td>
+            <td><button class="btn-sm" onclick="alert('Opening ODI-2024-3044')">View</button></td>
+          </tr>
+          <tr>
+            <td><strong>ODI-2024-3811</strong></td>
+            <td>Jharigaon AWC-1</td>
+            <td><span class="badge badge-suw">SUW</span></td>
+            <td>9 days</td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td>Cycle 1 – On Track</td>
+            <td><span class="badge badge-grey">None</span></td>
+            <td>—</td>
+            <td><button class="btn-sm" onclick="alert('Opening ODI-2024-3811')">View</button></td>
+          </tr>
+          <tr>
+            <td><strong>ODI-2024-4221</strong></td>
+            <td>Papadahandi AWC-3</td>
+            <td><span class="badge badge-mam">MAM</span></td>
+            <td>6 days</td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td>Cycle 1 – On Track</td>
+            <td><span class="badge badge-grey">None</span></td>
+            <td>—</td>
+            <td><button class="btn-sm" onclick="alert('Opening ODI-2024-4221')">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section-note">🟡 Yellow: No follow-up &gt;14 days &nbsp;|&nbsp; 🔴 Red: No improvement &gt;45 days &nbsp;|&nbsp; ⚑ Auto-Escalation triggered by system</div>
+  </div>
+
+  <!-- HEATMAP + ESCALATION (stacked on mobile, side-by-side on desktop) -->
+  <div class="two-col">
+
+    <!-- HEATMAP -->
+    <div class="panel">
+      <div class="section-header">AWC Risk Heatmap</div>
+      <div class="heatmap-grid">
+        <div class="heatmap-cell green" onclick="openAwcModal('Umerkote AWC-1')">
+          <div class="awc-name">Umerkote AWC-1</div>
+          <div class="awc-score">0</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell green" onclick="openAwcModal('Jharigaon AWC-1')">
+          <div class="awc-name">Jharigaon AWC-1</div>
+          <div class="awc-score">0</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell yellow" onclick="openAwcModal('Tentulikhunti AWC-2')">
+          <div class="awc-name">Tentuli AWC-2</div>
+          <div class="awc-score">3</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell yellow" onclick="openAwcModal('Papadahandi AWC-3')">
+          <div class="awc-name">Papadah AWC-3</div>
+          <div class="awc-score">4</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell red" onclick="openAwcModal('Badangi AWC-3')">
+          <div class="awc-name">Badangi AWC-3</div>
+          <div class="awc-score">8</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell red" onclick="openAwcModal('Sector-7 AWC-1')">
+          <div class="awc-name">Sector-7 AWC-1</div>
+          <div class="awc-score">7</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell purple" onclick="openAwcModal('Nabarangpur AWC-4')">
+          <div class="awc-name">Nabarangpur AWC-4</div>
+          <div class="awc-score">⚑</div>
+          <div class="awc-label">Data Flag</div>
+        </div>
+        <div class="heatmap-cell green" onclick="openAwcModal('Kosagumuda AWC-2')">
+          <div class="awc-name">Kosagumuda AWC-2</div>
+          <div class="awc-score">0</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell yellow" onclick="openAwcModal('Chandahandi AWC-1')">
+          <div class="awc-name">Chandahandi AWC-1</div>
+          <div class="awc-score">2</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell red" onclick="openAwcModal('Raighar AWC-2')">
+          <div class="awc-name">Raighar AWC-2</div>
+          <div class="awc-score">6</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell green" onclick="openAwcModal('Nandahandi AWC-3')">
+          <div class="awc-name">Nandahandi AWC-3</div>
+          <div class="awc-score">0</div>
+          <div class="awc-label">SAM Cases</div>
+        </div>
+        <div class="heatmap-cell purple" onclick="openAwcModal('Dabugaon AWC-1')">
+          <div class="awc-name">Dabugaon AWC-1</div>
+          <div class="awc-score">⚑</div>
+          <div class="awc-label">Audit Flag</div>
+        </div>
+      </div>
+      <div class="heatmap-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#d4edda;border:1px solid #c3e6cb;"></div>Zero-SAM</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fff3cd;border:1px solid #ffeeba;"></div>Moderate</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f8d7da;border:1px solid #f5c6cb;"></div>High Burden</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e8d5f0;border:1px solid #d4a8e8;"></div>Data Flag</div>
+      </div>
+      <div class="section-note">Tap any AWC cell to view detailed metrics and supervision priority score.</div>
+    </div>
+
+    <!-- ESCALATION -->
+    <div class="panel">
+      <div class="section-header">Trigger &amp; Escalation Monitor</div>
+      <div class="escalation-flow">
+        <div class="esc-stage">
+          <div class="esc-stage-title">AWC Level</div>
+          <div class="esc-row">
+            <div class="esc-stat alert">47</div>
+            <div class="esc-details">
+              <div class="esc-label">AWCs Flagged</div>
+              <div class="esc-trigger">Trigger: SAM &gt;3 or follow-up gap &gt;14 days</div>
+              <div class="esc-deadline">⏱ Deadline: 72 hrs</div>
+            </div>
+          </div>
+        </div>
+        <div class="esc-stage">
+          <div class="esc-stage-title">Sector Level</div>
+          <div class="esc-row">
+            <div class="esc-stat warn">12</div>
+            <div class="esc-details">
+              <div class="esc-label">Sectors on Watchlist</div>
+              <div class="esc-trigger">Trigger: ≥2 AWCs stagnant &gt;30 days</div>
+              <div class="esc-deadline">⏱ Deadline: 5 days</div>
+            </div>
+          </div>
+        </div>
+        <div class="esc-stage">
+          <div class="esc-stage-title">Project (CDPO)</div>
+          <div class="esc-row">
+            <div class="esc-stat warn">3</div>
+            <div class="esc-details">
+              <div class="esc-label">Under CDPO Review</div>
+              <div class="esc-trigger">Trigger: Sector non-responsive &gt;7 days</div>
+              <div class="esc-deadline">⏱ Deadline: 7 days</div>
+            </div>
+          </div>
+        </div>
+        <div class="esc-stage">
+          <div class="esc-stage-title">District Level</div>
+          <div class="esc-row">
+            <div class="esc-stat alert">2</div>
+            <div class="esc-details">
+              <div class="esc-label">Stagnation Clusters</div>
+              <div class="esc-trigger">Trigger: Repeat SAM &gt;10% or no resolution &gt;45 days</div>
+              <div class="esc-deadline">⏱ Deadline: 14 days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 12px 12px;">
+        <div class="sub-section-title">Monthly Escalation Summary</div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Metric</th><th>Count</th><th>vs Last Month</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Escalated This Month</td><td><strong>63</strong></td><td style="color:var(--red-alert)">↑18</td><td><span class="badge badge-red">Alert</span></td></tr>
+              <tr><td>AWCs Under Red Flag</td><td><strong>11</strong></td><td style="color:var(--red-alert)">↑4</td><td><span class="badge badge-red">Alert</span></td></tr>
+              <tr><td>Sectors on CDPO Watchlist</td><td><strong>12</strong></td><td style="color:var(--yellow-warn)">↑2</td><td><span class="badge badge-yellow">Monitor</span></td></tr>
+              <tr><td>Resolved Post-Escalation</td><td><strong>34</strong></td><td style="color:var(--green-ok)">↑9</td><td><span class="badge badge-green">Good</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /tab-main -->
+
+<!-- ===== INTEGRITY TAB ===== -->
+<div id="tab-integrity" class="tab-content">
+<div class="main">
+  <div class="panel">
+    <div class="section-header">
+      Measurement Integrity &amp; Audit
+      <div class="section-actions"><button class="btn-sm btn-saffron" onclick="alert('Generating report...')">⬇ PDF</button></div>
+    </div>
+    <div class="integrity-grid">
+      <div>
+        <div class="sub-section-title">Data Quality Indicators</div>
+        <div class="integrity-stat-grid">
+          <div class="int-stat"><div class="int-stat-val alert">23</div><div class="int-stat-label">Data Variance Flags</div></div>
+          <div class="int-stat"><div class="int-stat-val alert">8</div><div class="int-stat-label">Implausible Ht/Wt Gains</div></div>
+          <div class="int-stat"><div class="int-stat-val" style="color:var(--yellow-warn)">74.2%</div><div class="int-stat-label">Calibration Compliance</div></div>
+          <div class="int-stat"><div class="int-stat-val" style="color:var(--green-ok)">91.3%</div><div class="int-stat-label">Upload Timeliness</div></div>
+        </div>
+        <div style="margin-top:14px;">
+          <div class="sub-section-title">Random Audit Schedule (Feb 2026)</div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>AWC</th><th>Date</th><th>Auditor</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Badangi AWC-3</td><td class="audit-row-due">22-Feb-2026</td><td>DSWO Team</td><td><span class="badge badge-red">Pending</span></td></tr>
+                <tr><td>Nabarangpur AWC-4</td><td class="audit-row-due">24-Feb-2026</td><td>Ind. Monitor</td><td><span class="badge badge-yellow">Scheduled</span></td></tr>
+                <tr><td>Dabugaon AWC-1</td><td>26-Feb-2026</td><td>CDPO Inspection</td><td><span class="badge badge-grey">Upcoming</span></td></tr>
+                <tr><td>Raighar AWC-2</td><td>01-Mar-2026</td><td>NIC Audit</td><td><span class="badge badge-grey">Upcoming</span></td></tr>
+                <tr><td>Tentulikhunti AWC-2</td><td>05-Feb-2026</td><td>Dist. Supervisor</td><td><span class="badge badge-green">Completed</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sub-section-title">Anomaly Detection Map</div>
+        <div class="map-placeholder">
+          <div class="map-dots" id="mapDots"></div>
+          <div style="z-index:1;text-align:center;">
+            <div style="font-size:36px;margin-bottom:5px;">🗺️</div>
+            <div style="font-weight:700;color:var(--gov-blue);">Nabarangpur Project Area</div>
+            <div style="font-size:10px;">GIS Anomaly Clusters</div>
+          </div>
+        </div>
+        <div class="heatmap-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#e8d5f0;"></div>Anomaly Cluster</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f8d7da;"></div>High-Risk Flags</div>
+        </div>
+        <div style="margin-top:14px;">
+          <div class="sub-section-title">Independent Verification Status</div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Sector</th><th>Type</th><th>Last Verified</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Sector-1</td><td>Mobile App Check</td><td>12-Feb-2026</td><td><span class="badge badge-green">Pass</span></td></tr>
+                <tr><td>Sector-4</td><td>Register Audit</td><td>08-Feb-2026</td><td><span class="badge badge-yellow">Discrepancy</span></td></tr>
+                <tr><td>Sector-7</td><td>NGO Visit</td><td>15-Feb-2026</td><td><span class="badge badge-red">Fail</span></td></tr>
+                <tr><td>Sector-3</td><td>DSWO Visit</td><td>05-Feb-2026</td><td><span class="badge badge-green">Pass</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== ENGAGEMENT TAB ===== -->
+<div id="tab-engagement" class="tab-content">
+<div class="main">
+  <div class="panel">
+    <div class="section-header">
+      Engagement Proxy Tracker — Leading Indicators (Sep–Feb)
+      <div class="section-actions"><button class="btn-sm btn-saffron" onclick="alert('Exporting...')">⬇ Export</button></div>
+    </div>
+    <div class="sparkline-wrap">
+      <div class="metric-row">
+        <div class="metric-header">
+          <div class="metric-name">Growth Monitoring Completeness</div>
+          <div class="metric-val">78.4%</div>
+        </div>
+        <div class="spark">
+          <div class="spark-bar" style="height:55%"></div><div class="spark-bar" style="height:62%"></div>
+          <div class="spark-bar" style="height:70%"></div><div class="spark-bar" style="height:68%"></div>
+          <div class="spark-bar" style="height:74%"></div><div class="spark-bar" style="height:78%"></div>
+        </div>
+        <div><span class="badge badge-yellow">Below Target (90%)</span></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-header">
+          <div class="metric-name">High-Risk Follow-up Compliance</div>
+          <div class="metric-val" style="color:var(--red-alert)">62.1%</div>
+        </div>
+        <div class="spark">
+          <div class="spark-bar" style="height:80%"></div><div class="spark-bar" style="height:75%"></div>
+          <div class="spark-bar" style="height:72%"></div><div class="spark-bar" style="height:69%"></div>
+          <div class="spark-bar alert" style="height:65%"></div><div class="spark-bar alert" style="height:62%"></div>
+        </div>
+        <div><span class="badge badge-red">⚠ Declining</span></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-header">
+          <div class="metric-name">Sector Meeting Attendance</div>
+          <div class="metric-val" style="color:var(--green-ok)">91.0%</div>
+        </div>
+        <div class="spark">
+          <div class="spark-bar" style="height:88%"></div><div class="spark-bar" style="height:90%"></div>
+          <div class="spark-bar" style="height:85%"></div><div class="spark-bar" style="height:92%"></div>
+          <div class="spark-bar" style="height:89%"></div><div class="spark-bar" style="height:91%"></div>
+        </div>
+        <div><span class="badge badge-green">On Target</span></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-header">
+          <div class="metric-name">Data Upload Timeliness</div>
+          <div class="metric-val" style="color:var(--green-ok)">91.3%</div>
+        </div>
+        <div class="spark">
+          <div class="spark-bar" style="height:92%"></div><div class="spark-bar" style="height:88%"></div>
+          <div class="spark-bar" style="height:94%"></div><div class="spark-bar" style="height:91%"></div>
+          <div class="spark-bar" style="height:90%"></div><div class="spark-bar" style="height:91%"></div>
+        </div>
+        <div><span class="badge badge-green">On Target</span></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-header">
+          <div class="metric-name">Appetite Test Documentation Rate</div>
+          <div class="metric-val" style="color:var(--red-alert)">41.0%</div>
+        </div>
+        <div class="spark">
+          <div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:55%"></div>
+          <div class="spark-bar" style="height:52%"></div><div class="spark-bar alert" style="height:48%"></div>
+          <div class="spark-bar alert" style="height:44%"></div><div class="spark-bar alert" style="height:41%"></div>
+        </div>
+        <div><span class="badge badge-red">⚠ Critical</span></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-header">
+          <div class="metric-name">NRC Referral Compliance</div>
+          <div class="metric-val">79.2%</div>
+        </div>
+        <div class="spark">
+          <div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:68%"></div>
+          <div class="spark-bar" style="height:72%"></div><div class="spark-bar" style="height:75%"></div>
+          <div class="spark-bar" style="height:77%"></div><div class="spark-bar" style="height:79%"></div>
+        </div>
+        <div><span class="badge badge-yellow">Improving</span></div>
+      </div>
+    </div>
+    <div class="section-note">⚠ Alert triggered for metrics showing ≥2 consecutive months of decline. Source: POSHAN MIS via NIC ICDS-CAS v3.1.</div>
+  </div>
+</div>
+</div>
+
+<!-- ===== TIERS TAB ===== -->
+<div id="tab-tiers" class="tab-content">
+<div class="main">
+  <div class="panel">
+    <div class="section-header">
+      SUPOSHIT Tier Rankings — Nabarangpur
+      <div class="section-actions">
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setToggle(this,'abs')">Absolute</button>
+          <button class="toggle-btn" onclick="setToggle(this,'delta')">Delta</button>
+        </div>
+      </div>
+    </div>
+    <div class="tier-grid">
+      <div class="tier-card platinum">
+        <div class="tier-icon">💎</div>
+        <div class="tier-name">Platinum</div>
+        <div class="tier-count">5</div>
+        <div class="tier-desc">Zero-SAM + Validated Integrity</div>
+      </div>
+      <div class="tier-card gold">
+        <div class="tier-icon">🥇</div>
+        <div class="tier-name">Gold</div>
+        <div class="tier-count">14</div>
+        <div class="tier-desc">SAM &lt;2% + High Coverage</div>
+      </div>
+      <div class="tier-card silver">
+        <div class="tier-icon">🥈</div>
+        <div class="tier-name">Silver</div>
+        <div class="tier-count">22</div>
+        <div class="tier-desc">Improving + Compliant</div>
+      </div>
+      <div class="tier-card watchlist">
+        <div class="tier-icon">⚠️</div>
+        <div class="tier-name">Watchlist</div>
+        <div class="tier-count">11</div>
+        <div class="tier-desc">High Burden or Data Flags</div>
+      </div>
+    </div>
+    <div style="padding:12px;">
+      <div class="sub-section-title">Comparative Sector Ranking</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th><th>Sector</th><th>Tier</th><th>Resolution (Days)</th>
+              <th>Repeat-SAM</th><th>Coverage</th><th>Integrity</th><th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>#1</strong></td><td>Jharigaon</td>
+              <td><span class="badge" style="background:#e8d5f0;color:#4a1060;border:1px solid #c9a3e0;">💎 Platinum</span></td>
+              <td>14</td><td style="color:var(--green-ok)"><strong>2.1%</strong></td>
+              <td>93.4%</td><td><span class="badge badge-green">97/100</span></td><td><span class="badge badge-green">Low</span></td>
+            </tr>
+            <tr>
+              <td><strong>#2</strong></td><td>Kosagumuda</td>
+              <td><span class="badge" style="background:#fff0d6;color:#7a4500;border:1px solid #ffd699;">🥇 Gold</span></td>
+              <td>18</td><td style="color:var(--green-ok)"><strong>3.4%</strong></td>
+              <td>88.2%</td><td><span class="badge badge-green">91/100</span></td><td><span class="badge badge-green">Low</span></td>
+            </tr>
+            <tr>
+              <td><strong>#3</strong></td><td>Papadahandi</td>
+              <td><span class="badge" style="background:#e8e8e8;color:#4a4a4a;">🥈 Silver</span></td>
+              <td>22</td><td>5.8%</td>
+              <td>84.1%</td><td><span class="badge badge-yellow">82/100</span></td><td><span class="badge badge-yellow">Medium</span></td>
+            </tr>
+            <tr class="row-yellow">
+              <td><strong>#7</strong></td><td>Tentulikhunti</td>
+              <td><span class="badge badge-yellow">⚠ Watchlist</span></td>
+              <td>38</td><td style="color:var(--yellow-warn)"><strong>9.2%</strong></td>
+              <td>71.4%</td><td><span class="badge badge-yellow">64/100</span></td><td><span class="badge badge-red">High</span></td>
+            </tr>
+            <tr class="row-red">
+              <td><strong>#8</strong></td><td>Badangi</td>
+              <td><span class="badge badge-red">⚠ Watchlist</span></td>
+              <td>52</td><td style="color:var(--red-alert)"><strong>14.7%</strong></td>
+              <td>62.8%</td><td><span class="badge badge-red">51/100</span></td><td><span class="badge badge-red">Critical</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section-note">Integrity Score = calibration compliance + upload timeliness + plausibility + audit outcomes. Supervision Priority = Burden × Coverage Gap × Data Risk × Stagnation Rate.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL: CASE -->
+<div class="modal-overlay" id="caseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Case Detail</h3>
+      <button class="modal-close" onclick="closeModal('caseModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-stat-grid">
+        <div class="m-stat"><div class="m-stat-val" style="color:var(--red-alert)">SAM</div><div class="m-stat-label">Status</div></div>
+        <div class="m-stat"><div class="m-stat-val" style="color:var(--red-alert)">62</div><div class="m-stat-label">Days Since Follow-up</div></div>
+        <div class="m-stat"><div class="m-stat-val">Cycle 2</div><div class="m-stat-label">Recovery Cycle</div></div>
+        <div class="m-stat"><div class="m-stat-val" style="color:var(--red-alert)">District</div><div class="m-stat-label">Escalation Level</div></div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td style="color:var(--grey-500);width:42%">Child Name</td><td><strong>Kumari R. [ODI-2024-0834]</strong></td></tr>
+            <tr><td style="color:var(--grey-500)">AWC</td><td>Badangi AWC-3, Sector 5</td></tr>
+            <tr><td style="color:var(--grey-500)">Last Weight</td><td>7.2 kg (Below -3 SD)</td></tr>
+            <tr><td style="color:var(--grey-500)">Appetite Test</td><td><span class="badge badge-red">Not Completed</span></td></tr>
+            <tr><td style="color:var(--grey-500)">NRC Referral</td><td><span class="badge badge-yellow">Pending</span></td></tr>
+            <tr><td style="color:var(--grey-500)">Auto-Trigger</td><td><span class="escalation-badge">⚑ District Escalation</span></td></tr>
+            <tr><td style="color:var(--grey-500)">Action Required</td><td style="color:var(--red-alert);font-weight:700">NRC admission + CDPO review by 22-Feb-2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-sm btn-saffron" onclick="alert('Escalation acknowledged.')">Acknowledge</button>
+        <button class="btn-sm" onclick="alert('Adding note...')">Add Note</button>
+        <button class="btn-sm" onclick="closeModal('caseModal')">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AWC -->
+<div class="modal-overlay" id="awcModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="awcModalTitle">AWC Metrics</h3>
+      <button class="modal-close" onclick="closeModal('awcModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-stat-grid">
+        <div class="m-stat"><div class="m-stat-val">78.3%</div><div class="m-stat-label">Coverage %</div></div>
+        <div class="m-stat"><div class="m-stat-val" style="color:var(--yellow-warn)">64/100</div><div class="m-stat-label">Plausibility Score</div></div>
+        <div class="m-stat"><div class="m-stat-val">3×/mo</div><div class="m-stat-label">Supervisor Visits</div></div>
+        <div class="m-stat"><div class="m-stat-val" style="color:var(--red-alert)">42%</div><div class="m-stat-label">Stagnation Rate</div></div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td style="color:var(--grey-500);width:55%">Supervision Priority Score</td><td><strong style="color:var(--red-alert)">87/100 (HIGH)</strong></td></tr>
+            <tr><td style="color:var(--grey-500)">Data Integrity Risk</td><td><span class="badge badge-yellow">Medium Risk</span></td></tr>
+            <tr><td style="color:var(--grey-500)">Last Supervisor Visit</td><td>14-Feb-2026</td></tr>
+            <tr><td style="color:var(--grey-500)">Open SAM Cases</td><td><strong style="color:var(--red-alert)">8</strong></td></tr>
+            <tr><td style="color:var(--grey-500)">Repeat SAM Rate</td><td><strong style="color:var(--red-alert)">14.7%</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-sm btn-saffron" onclick="alert('Scheduling visit...')">Schedule Visit</button>
+        <button class="btn-sm" onclick="closeModal('awcModal')">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="gov-footer">
+  <div>POSHAN Tracker 2.0 | SUPOSHIT Odisha Mission | NIC Hosted | © Govt. of Odisha, 2026 | ICDS-CAS v3.1 | RTI Act 2005</div>
+  <button class="download-btn" onclick="window.print()">🖨 Print / PDF</button>
+</div>
+
+<script>
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+function openModal(id, awc) {
+  document.getElementById('modalTitle').textContent = 'Case Detail — ' + id;
+  document.getElementById('caseModal').classList.add('show');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function openAwcModal(name) {
+  document.getElementById('awcModalTitle').textContent = 'AWC Metrics — ' + name;
+  document.getElementById('awcModal').classList.add('show');
+}
+function setToggle(el, type) {
+  el.parentNode.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if(type === 'delta') alert('Switching to Delta (Improvement) Ranking — showing month-on-month change.');
+}
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', function(e) { if(e.target===this) this.classList.remove('show'); });
+});
+window.addEventListener('load', function() {
+  const colors = ['#e8d5f0','#f8d7da','#e8d5f0','#f8d7da','#fff3cd','#d4edda','#e8d5f0'];
+  const c = document.getElementById('mapDots');
+  if(c) colors.forEach(col => {
+    const d = document.createElement('div');
+    d.className = 'map-dot';
+    const s = 16 + Math.random()*28;
+    d.style.cssText = `width:${s}px;height:${s}px;background:${col};left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;border:2px solid rgba(0,0,0,0.1);`;
+    c.appendChild(d);
+  });
+});
+</script>
+</body>
+</html>
